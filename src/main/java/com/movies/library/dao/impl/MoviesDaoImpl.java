@@ -3,6 +3,7 @@ package com.movies.library.dao.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,9 @@ import com.movies.library.model.Movies;
 @Component
 public class MoviesDaoImpl implements MoviesDao {
 	
-	@Autowired
-    private JdbcTemplate template;
-
-    public void setTemplate(JdbcTemplate template) {
-        this.template = template;
-    }
+    @Autowired
+	@Qualifier("movieJdbcTemplate")
+	private JdbcTemplate template;
     
     public List<Movies> getAllmovies() {
         return (List<Movies>) template.query("SELECT * FROM MOVIES", new MoviesMapper());
