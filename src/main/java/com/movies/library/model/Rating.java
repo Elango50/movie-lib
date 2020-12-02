@@ -7,6 +7,8 @@ public class Rating {
 	private int year;
 	private int rating;
 	
+	public Rating() {}
+	
 	public Rating(long id, String name, int year, int rating) {
 		this.id = id;
 		this.name = name;
@@ -42,4 +44,8 @@ public class Rating {
 		return id;
 	}
 
+	public void setId(long id) {
+		this.id = id;
+	}
+	
 }

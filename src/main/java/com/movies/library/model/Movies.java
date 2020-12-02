@@ -7,6 +7,8 @@ public class Movies {
 	private int year;
 	private String director;
 	
+	public Movies() {}
+	
 	public Movies(long id, String name, int year, String director) {
 		this.id = id;
 		this.name = name;
@@ -40,6 +42,10 @@ public class Movies {
 
 	public long getId() {
 		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 }
