@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.movies</groupId>
-	<artifactId>library</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>movie-library</artifactId>
+	<version>0.0.1</version>
 	<name>library</name>
 	<description>Demo project for Spring Boot using JPA, Batch, Cloud Function,</description>
 
