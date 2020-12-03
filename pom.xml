@@ -53,6 +53,12 @@
 		</dependency>
 		
 		<dependency>
+		    <groupId>com.amazonaws</groupId>
+		    <artifactId>aws-java-sdk-s3</artifactId>
+		    <version>1.11.911</version>
+		</dependency>
+
+		<dependency>
 		    <groupId>org.hsqldb</groupId>
 		    <artifactId>hsqldb</artifactId>
 		    <scope>runtime</scope>
