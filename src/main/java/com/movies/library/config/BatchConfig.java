@@ -26,6 +26,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.movies.library.model.Movies;
 import com.movies.library.model.Rating;
 import com.movies.library.processor.MovieItemProcessor;
+import com.movies.library.processor.RatingItemProcessor;
 import com.movies.library.task.MovieTask;
 import com.movies.library.task.RatingTask;
 
@@ -61,12 +62,13 @@ public class BatchConfig {
     }
 	
 	@Bean
-    public Job movieLibJob(MovieJobExecutionListener listener, Step step1) {
+    public Job movieLibJob(MovieJobExecutionListener listener, Step step1,  Step step2) {
         return jobBuilderFactory.get("demoJob")
                 .incrementer(new RunIdIncrementer())
                 .start(createMovieTask())
                 .next(ratingTask())
                 .next(step1)
+                .next(step2)
                 .build();
     }
 	
@@ -90,7 +92,7 @@ public class BatchConfig {
 		  .name("ratingItemReader")		
 		  .resource(new ClassPathResource("rating.csv"))
 		  .delimited()
-		  .names(new String[]{ "id", "name", "year", "director" })
+		  .names(new String[]{ "id", "name", "year", "rating" })
 		  .fieldSetMapper(new BeanWrapperFieldSetMapper<Rating>() {{
 			   setTargetType(Rating.class);
 		  }})
@@ -108,9 +110,24 @@ public class BatchConfig {
 	}
 	
 	@Bean
+	public JdbcBatchItemWriter<Rating> ratingWriter(@Qualifier("ratingDB") DataSource dataSource) {
+		return new JdbcBatchItemWriterBuilder<Rating>()
+		   .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<Rating>())
+		   .sql("INSERT INTO ratings (id, name, year, rating) VALUES (:id, :name, :year, :rating)")
+		   .dataSource(dataSource)
+		   .build();
+	}
+	
+	@Bean
 	public ItemProcessor<Movies, Movies> processor() {
 		return new MovieItemProcessor();
 	}
+	
+	@Bean
+	public ItemProcessor<Rating, Rating> ratingProcessor() {
+		return new RatingItemProcessor();
+	}
+	
 	
 	@Bean
 	public Step step1(ItemReader<Movies> reader, ItemWriter<Movies> writer,
@@ -121,6 +138,18 @@ public class BatchConfig {
 		   .reader(reader)
 		   .processor(processor)
 		   .writer(writer)
+		   .build();
+	}
+	
+	@Bean
+	public Step step2(ItemReader<Rating> ratingReader, ItemWriter<Rating> ratingWriter,
+			ItemProcessor<Rating, Rating> ratingProcessor) {
+		 return stepBuilderFactory
+		   .get("step1")
+		   .<Rating, Rating> chunk(5)
+		   .reader(ratingReader)
+		   .processor(ratingProcessor)
+		   .writer(ratingWriter)
 		   .build();
 	}
 }
